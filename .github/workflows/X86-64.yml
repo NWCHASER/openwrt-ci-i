@@ -106,30 +106,14 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-   
-    - name: Remove Unwanted Targets (清理非必要架构)
-      run: |
-        cd $OPENWRT_PATH
-        echo "🧹 正在清理非 x86_64 架构源码..."
-        
-        # 核心：删除 Mediatek 目录
-        rm -rf target/linux/mediatek
-        
-        # 建议：同时删除其他不需要的架构，防止依赖扫描干扰
-        rm -rf target/linux/ramips      # 联发科老款 MIPS 架构
-        rm -rf target/linux/rockchip    # 瑞芯微 ARM 架构
-        rm -rf target/linux/bcm27xx     # 树莓派 Broadcom 架构
-        rm -rf target/linux/ipq40xx     # 高通 IPQ40xx 架构
-        rm -rf target/linux/ipq806x     # 高通 IPQ806x 架构
-        
-        echo "✅ 清理完成，当前保留的架构："
-        ls target/linux/
-      shell: bash
-      
+         
     - name: Compile Firmware(开始编译固件)
       id: compile
       run: |
         cd $OPENWRT_PATH
+        make dirclean
+        rm -f .config
+        cp configs/x86-64.config .config
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT

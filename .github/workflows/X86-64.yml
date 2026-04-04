@@ -113,7 +113,10 @@ jobs:
         cd $OPENWRT_PATH
         make dirclean
         rm -f .config
-        cp configs/x86-64.config .config
+        cp $GITHUB_WORKSPACE/$CONFIG_FILE .config
+        # 验证配置是否正确（可选，用于调试）
+        echo "=== 当前选择的 Target ==="
+        grep "CONFIG_TARGET_" .config | grep -v "^#" | head -20
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT

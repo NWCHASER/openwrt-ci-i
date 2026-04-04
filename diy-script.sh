@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# 在编译开始前，强制清理并应用 x86 配置
-make dirclean
-rm -f .config
-cp configs/x86-64.config .config
-# 可选：运行 make defconfig 来解析和处理所有依赖
-make defconfig
-
 # 修改默认IP
 # sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
 

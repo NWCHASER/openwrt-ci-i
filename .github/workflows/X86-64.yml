@@ -61,16 +61,17 @@ jobs:
 
     - name: Clone Source Code(克隆源代码)
       run: |
+        rm -rf openwrt
         df -hT $GITHUB_WORKSPACE
         git clone $REPO_URL -b $REPO_BRANCH openwrt
-        cd openwrt
+        cd openwrt      
         echo "OPENWRT_PATH=$PWD" >> $GITHUB_ENV
         VERSION_INFO=$(git show -s --date=short --format="作者: %an<br/>时间: %cd<br/>内容: %s<br/>hash: %H")
         echo "VERSION_INFO=$VERSION_INFO" >> $GITHUB_ENV
 
     - name: Generate Variables(生成变量)
       run: |
-        cp $CONFIG_FILE $OPENWRT_PATH/.config
+        cp $GITHUB_WORKSPACE/$CONFIG_FILE $OPENWRT_PATH/.config
         cd $OPENWRT_PATH
         make defconfig > /dev/null 2>&1
         SOURCE_REPO="$(echo $REPO_URL | awk -F '/' '{print $(NF)}')"
@@ -96,8 +97,8 @@ jobs:
 
     - name: Load Custom Configuration(加载自定义配置)
       run: |
-        [ -e files ] && mv files $OPENWRT_PATH/files
-        [ -e configs ] && mv configs/x86-64.config $OPENWRT_PATH/.config
+        [ -e files ] && cp files $OPENWRT_PATH/files
+        [ -e configs ] && cp configs/x86-64.config $OPENWRT_PATH/.config
 
     - name: Download DL Package(下载DL软件包)
       run: |
@@ -111,9 +112,7 @@ jobs:
       id: compile
       run: |
         cd $OPENWRT_PATH
-        sed -i '/mediatek/d' .config
-        sed -i '/filogic/d' .config
-        sed -i '/aarch64_cortex-a53/d' .config
+        make defconfig
         echo "=== 当前选择的 Target ==="
         grep "CONFIG_TARGET_" .config | grep -v "^#" | head -20
         echo -e "$(nproc) thread compile"

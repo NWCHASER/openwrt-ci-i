@@ -12,7 +12,7 @@ jobs:
         arch:
           - x86_64
         sdk:
-          - SNAPSHOT
+          - openwrt-25.12
 
     steps:
       - name: Maximize build space & Add Swap

@@ -103,7 +103,6 @@ jobs:
     - name: Download DL Package(下载DL软件包)
       run: |
         cd $OPENWRT_PATH
-        make defconfig
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
@@ -112,7 +111,6 @@ jobs:
       id: compile
       run: |
         cd $OPENWRT_PATH
-        make defconfig
         echo "=== 当前选择的 Target ==="
         grep "CONFIG_TARGET_" .config | grep -v "^#" | head -20
         echo -e "$(nproc) thread compile"
